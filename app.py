@@ -88,6 +88,11 @@ st.markdown(
         visibility: hidden;
     }
 
+    .stAppDeployButton,
+    [data-testid="stAppDeployButton"] {
+        display: none !important;
+    }
+
     footer {
         visibility: hidden;
     }
@@ -184,8 +189,6 @@ with st.sidebar:
 
     st.divider()
 
-    st.caption("Powered by")
-    st.caption("FAISS + Hugging Face + Groq")
 
 
 # -----------------------------
