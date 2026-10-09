@@ -17,18 +17,99 @@ st.set_page_config(
     layout="centered"
 )
 
+with st.sidebar:
+    theme_mode = st.radio(
+        "Appearance",
+        options=["Light", "Dark"],
+        horizontal=True,
+        key="theme_mode",
+    )
+
+theme_palette = {
+    "Light": {
+        "background": "#f5f5f5",
+        "surface": "#ffffff",
+        "text": "#222222",
+        "heading": "#111111",
+        "muted": "#666666",
+        "border": "#e5e5e5",
+        "user_background": "#111111",
+        "user_text": "#ffffff",
+        "input_background": "#ffffff",
+    },
+    "Dark": {
+        "background": "#15171c",
+        "surface": "#242832",
+        "text": "#f1f3f5",
+        "heading": "#ffffff",
+        "muted": "#b0b7c3",
+        "border": "#3a404c",
+        "user_background": "#d6a84f",
+        "user_text": "#171717",
+        "input_background": "#242832",
+    },
+}
+palette = theme_palette[theme_mode]
+
 
 # -----------------------------
 # Custom CSS
 # -----------------------------
 
 st.markdown(
+    f"""
+    <style>
+    :root {{
+        color-scheme: {"dark" if theme_mode == "Dark" else "light"};
+        --page-bg: {palette["background"]};
+        --surface: {palette["surface"]};
+        --text: {palette["text"]};
+        --heading: {palette["heading"]};
+        --muted: {palette["muted"]};
+        --border: {palette["border"]};
+        --user-background: {palette["user_background"]};
+        --user-text: {palette["user_text"]};
+        --input-background: {palette["input_background"]};
+    }}
+    </style>
+    """,
+    unsafe_allow_html=True,
+)
+
+st.markdown(
     """
     <style>
 
-    /* Main background */
-    .stApp {
-        background: #f5f5f5;
+    /* Page, content, and fixed bottom surfaces */
+    html,
+    body,
+    #root,
+    .stApp,
+    [data-testid="stAppViewContainer"],
+    [data-testid="stMain"],
+    [data-testid="stMainBlockContainer"],
+    [data-testid="stBottom"],
+    [data-testid="stBottom"] > div {
+        background: var(--page-bg) !important;
+        color: var(--text);
+    }
+
+    [data-testid="stSidebar"] {
+        background: var(--surface) !important;
+    }
+
+    [data-testid="stSidebar"] * {
+        color: var(--text);
+    }
+
+    [data-testid="stSidebar"] button {
+        background: var(--page-bg);
+        border: 1px solid var(--border);
+        border-radius: 10px;
+    }
+
+    [data-testid="stSidebar"] input[type="radio"] {
+        accent-color: #d6a84f;
     }
 
     /* Header */
@@ -40,12 +121,12 @@ st.markdown(
     .main-header h1 {
         font-size: 38px;
         margin-bottom: 5px;
-        color: #111111;
+        color: var(--heading);
     }
 
     .main-header p {
         font-size: 16px;
-        color: #666666;
+        color: var(--muted);
     }
 
     /* Chat area */
@@ -56,8 +137,8 @@ st.markdown(
 
     /* User message */
     .user-message {
-        background: #111111;
-        color: white;
+        background: var(--user-background);
+        color: var(--user-text);
         padding: 14px 18px;
         border-radius: 18px 18px 4px 18px;
         margin: 10px 0 10px auto;
@@ -67,20 +148,44 @@ st.markdown(
 
     /* Assistant message */
     .assistant-message {
-        background: white;
-        color: #222222;
+        background: var(--surface);
+        color: var(--text);
         padding: 16px 18px;
         border-radius: 18px 18px 18px 4px;
         margin: 10px auto 10px 0;
         max-width: 80%;
         width: fit-content;
-        border: 1px solid #e5e5e5;
+        border: 1px solid var(--border);
         box-shadow: 0 2px 8px rgba(0,0,0,0.05);
     }
 
-    /* Input */
-    .stChatInput {
-        padding-bottom: 20px;
+    /* Chat input */
+    [data-testid="stChatInput"] {
+        padding: 8px 0 20px;
+        background: var(--page-bg) !important;
+    }
+
+    [data-testid="stChatInput"] > div,
+    [data-testid="stChatInput"] div[data-baseweb="textarea"] {
+        background: var(--input-background) !important;
+        border: 1px solid var(--border) !important;
+        border-radius: 12px !important;
+        box-shadow: none !important;
+    }
+
+    [data-testid="stChatInput"]:focus-within > div {
+        border-color: #d6a84f !important;
+        box-shadow: 0 0 0 2px rgba(214, 168, 79, 0.18) !important;
+    }
+
+    [data-testid="stChatInput"] textarea {
+        background: transparent !important;
+        color: var(--text) !important;
+        border: 0 !important;
+    }
+
+    [data-testid="stChatInput"] textarea::placeholder {
+        color: var(--muted);
     }
 
     /* Hide Streamlit branding */
