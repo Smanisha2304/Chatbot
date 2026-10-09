@@ -262,6 +262,9 @@ retriever, llm = load_rag()
 if "messages" not in st.session_state:
     st.session_state.messages = []
 
+if "recent_chats" not in st.session_state:
+    st.session_state.recent_chats = []
+
 
 # -----------------------------
 # Sidebar
@@ -283,6 +286,32 @@ with st.sidebar:
         - Performance
         """
     )
+
+    st.divider()
+
+    st.markdown("### 🕘 Recent chats")
+
+    if st.session_state.recent_chats:
+        for index, chat in enumerate(reversed(st.session_state.recent_chats)):
+            chat_index = len(st.session_state.recent_chats) - index - 1
+            title = chat["question"].strip().replace("\n", " ")
+            if len(title) > 34:
+                title = f"{title[:31]}..."
+
+            with st.expander(f"{index + 1}. {title}"):
+                st.markdown("**You asked**")
+                st.write(chat["question"])
+                st.markdown("**Jawa AI replied**")
+                st.write(chat["answer"])
+                if st.button(
+                    "🗑️ Delete this chat",
+                    key=f"delete_recent_chat_{chat_index}",
+                    use_container_width=True,
+                ):
+                    del st.session_state.recent_chats[chat_index]
+                    st.rerun()
+    else:
+        st.caption("Your last three question-and-answer chats will appear here.")
 
     st.divider()
 
@@ -403,13 +432,12 @@ Answer:
         }
     )
 
-    # Display assistant response
-    st.markdown(
-        f"""
-        <div class="assistant-message">
-            🏍️ <b>Jawa AI</b><br><br>
-            {answer}
-        </div>
-        """,
-        unsafe_allow_html=True
+    st.session_state.recent_chats.append(
+        {
+            "question": question,
+            "answer": answer,
+        }
     )
+    st.session_state.recent_chats = st.session_state.recent_chats[-3:]
+
+    st.rerun()
